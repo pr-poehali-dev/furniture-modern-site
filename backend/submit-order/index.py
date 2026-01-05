@@ -56,6 +56,35 @@ def handler(event: dict, context) -> dict:
         
         cur.execute(
             '''
+            INSERT INTO customers (last_name, first_name, middle_name, phone, city, address, total_orders, total_spent)
+            VALUES (%s, %s, %s, %s, %s, %s, 1, %s)
+            ON CONFLICT (phone) 
+            DO UPDATE SET 
+                last_name = EXCLUDED.last_name,
+                first_name = EXCLUDED.first_name,
+                middle_name = EXCLUDED.middle_name,
+                city = EXCLUDED.city,
+                address = EXCLUDED.address,
+                total_orders = customers.total_orders + 1,
+                total_spent = customers.total_spent + EXCLUDED.total_spent,
+                updated_at = CURRENT_TIMESTAMP
+            RETURNING id
+            ''',
+            (
+                customer['lastName'],
+                customer['firstName'],
+                customer.get('middleName', ''),
+                customer['phone'],
+                customer['city'],
+                customer['address'],
+                total
+            )
+        )
+        
+        customer_id = cur.fetchone()[0]
+        
+        cur.execute(
+            '''
             INSERT INTO orders (last_name, first_name, middle_name, phone, city, address, items, total)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id, created_at
