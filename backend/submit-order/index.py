@@ -6,8 +6,8 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-def send_order_email(order_id: int, customer: dict, items: list, total: float):
-    '''Отправка уведомления о новом заказе на email'''
+def send_email(subject: str, body: str):
+    '''Отправка email на shika_room@bk.ru'''
     smtp_host = os.environ.get('SMTP_HOST')
     smtp_port = int(os.environ.get('SMTP_PORT', '587'))
     smtp_user = os.environ.get('SMTP_USER')
@@ -18,8 +18,17 @@ def send_order_email(order_id: int, customer: dict, items: list, total: float):
     msg = MIMEMultipart()
     msg['From'] = smtp_user
     msg['To'] = recipient
-    msg['Subject'] = f'Новый заказ #{order_id}'
+    msg['Subject'] = subject
     
+    msg.attach(MIMEText(body, 'plain', 'utf-8'))
+    
+    with smtplib.SMTP(smtp_host, smtp_port) as server:
+        server.starttls()
+        server.login(smtp_user, smtp_password)
+        server.send_message(msg)
+
+def send_order_email(order_id: int, customer: dict, items: list, total: float):
+    '''Отправка уведомления о новом заказе'''
     items_text = '\n'.join([
         f"  - {item['name']} x {item['quantity']} шт. = {item['price'] * item['quantity']} ₽"
         for item in items
@@ -39,16 +48,10 @@ def send_order_email(order_id: int, customer: dict, items: list, total: float):
 
 Итого: {total} ₽
 """
-    
-    msg.attach(MIMEText(body, 'plain', 'utf-8'))
-    
-    with smtplib.SMTP(smtp_host, smtp_port) as server:
-        server.starttls()
-        server.login(smtp_user, smtp_password)
-        server.send_message(msg)
+    send_email(f'Новый заказ #{order_id}', body)
 
 def handler(event: dict, context) -> dict:
-    '''API для отправки заказа в CRM и сохранения в базе данных'''
+    '''API для отправки заказа и обработки формы обратной связи'''
     method = event.get('httpMethod', 'POST')
     
     if method == 'OPTIONS':
@@ -76,6 +79,48 @@ def handler(event: dict, context) -> dict:
     
     body_str = event.get('body', '{}')
     data = json.loads(body_str)
+    
+    message_type = data.get('type', 'order')
+    
+    if message_type == 'contact':
+        try:
+            name = data.get('name', '')
+            email = data.get('email', '')
+            phone = data.get('phone', '')
+            message = data.get('message', '')
+            
+            if not name or not email or not message:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Заполните все обязательные поля'}),
+                    'isBase64Encoded': False
+                }
+            
+            body = f"""
+Новое сообщение с формы обратной связи:
+
+Имя: {name}
+Email: {email}
+Телефон: {phone}
+Сообщение:
+{message}
+"""
+            send_email(f'Новое сообщение с сайта от {name}', body)
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'success': True, 'message': 'Сообщение отправлено'}),
+                'isBase64Encoded': False
+            }
+        except Exception as e:
+            return {
+                'statusCode': 500,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'error': f'Ошибка отправки: {str(e)}'}),
+                'isBase64Encoded': False
+            }
     
     customer = data.get('customer', {})
     items = data.get('items', [])
