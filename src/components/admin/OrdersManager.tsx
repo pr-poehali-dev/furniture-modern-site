@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -14,47 +14,58 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
-import { Order } from '@/types/order';
-import { orders as initialOrders } from '@/data/orders';
 import { useToast } from '@/hooks/use-toast';
 
-const statusColors = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  confirmed: 'bg-blue-100 text-blue-800',
-  processing: 'bg-purple-100 text-purple-800',
-  shipped: 'bg-indigo-100 text-indigo-800',
-  delivered: 'bg-green-100 text-green-800',
-  cancelled: 'bg-red-100 text-red-800',
-};
+const API_URL = 'https://functions.poehali.dev/eadf3b13-4a58-4dfe-8483-18438ce40377';
 
-const statusLabels = {
-  pending: 'Новый',
-  confirmed: 'Подтверждён',
-  processing: 'В обработке',
-  shipped: 'Отправлен',
-  delivered: 'Доставлен',
-  cancelled: 'Отменён',
-};
+interface OrderItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+interface Order {
+  id: number;
+  lastName: string;
+  firstName: string;
+  middleName: string;
+  phone: string;
+  city: string;
+  address: string;
+  items: OrderItem[];
+  total: number;
+  createdAt: string;
+}
 
 export default function OrdersManager() {
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleStatusChange = (orderId: number, newStatus: Order['status']) => {
-    setOrders(orders.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o)));
-    toast({ title: 'Статус обновлён', description: `Заказ #${orderId} - ${statusLabels[newStatus]}` });
-  };
+  useEffect(() => {
+    const loadOrders = async () => {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        setOrders(data);
+      } catch (error) {
+        toast({
+          title: 'Ошибка',
+          description: 'Не удалось загрузить заказы',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadOrders();
+  }, [toast]);
+
+
 
   const handleViewOrder = (order: Order) => {
     setSelectedOrder(order);
@@ -68,15 +79,26 @@ export default function OrdersManager() {
         <p className="text-muted-foreground">Всего заказов: {orders.length}</p>
       </div>
 
+      {loading ? (
+        <div className="text-center py-16">
+          <p className="text-xl text-muted-foreground">Загрузка заказов...</p>
+        </div>
+      ) : orders.length === 0 ? (
+        <div className="text-center py-16">
+          <p className="text-xl text-muted-foreground">Заказов пока нет</p>
+        </div>
+      ) : (
+
       <div className="border rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>№ Заказа</TableHead>
               <TableHead>Клиент</TableHead>
+              <TableHead>Телефон</TableHead>
+              <TableHead>Город</TableHead>
               <TableHead>Дата</TableHead>
               <TableHead>Сумма</TableHead>
-              <TableHead>Статус</TableHead>
               <TableHead className="text-right">Действия</TableHead>
             </TableRow>
           </TableHeader>
@@ -86,33 +108,14 @@ export default function OrdersManager() {
                 <TableCell className="font-medium">#{order.id}</TableCell>
                 <TableCell>
                   <div>
-                    <p className="font-medium">{order.customerName}</p>
-                    <p className="text-sm text-muted-foreground">{order.customerEmail}</p>
+                    <p className="font-medium">{order.lastName} {order.firstName}</p>
+                    {order.middleName && <p className="text-sm text-muted-foreground">{order.middleName}</p>}
                   </div>
                 </TableCell>
+                <TableCell>{order.phone}</TableCell>
+                <TableCell>{order.city}</TableCell>
                 <TableCell>{new Date(order.createdAt).toLocaleDateString('ru-RU')}</TableCell>
                 <TableCell className="font-semibold">{order.total.toLocaleString('ru-RU')} ₽</TableCell>
-                <TableCell>
-                  <Select
-                    value={order.status}
-                    onValueChange={(value) => handleStatusChange(order.id, value as Order['status'])}
-                  >
-                    <SelectTrigger className="w-[150px]">
-                      <SelectValue>
-                        <Badge className={statusColors[order.status]}>
-                          {statusLabels[order.status]}
-                        </Badge>
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(statusLabels).map(([key, label]) => (
-                        <SelectItem key={key} value={key}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </TableCell>
                 <TableCell className="text-right">
                   <Button size="sm" variant="outline" onClick={() => handleViewOrder(order)}>
                     <Icon name="Eye" className="h-4 w-4 mr-2" />
@@ -124,6 +127,7 @@ export default function OrdersManager() {
           </TableBody>
         </Table>
       </div>
+      )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
@@ -136,16 +140,15 @@ export default function OrdersManager() {
                 <div>
                   <h3 className="font-semibold mb-2">Информация о клиенте</h3>
                   <div className="space-y-1 text-sm">
-                    <p><span className="text-muted-foreground">Имя:</span> {selectedOrder.customerName}</p>
-                    <p><span className="text-muted-foreground">Email:</span> {selectedOrder.customerEmail}</p>
-                    <p><span className="text-muted-foreground">Телефон:</span> {selectedOrder.customerPhone}</p>
+                    <p><span className="text-muted-foreground">ФИО:</span> {selectedOrder.lastName} {selectedOrder.firstName} {selectedOrder.middleName}</p>
+                    <p><span className="text-muted-foreground">Телефон:</span> {selectedOrder.phone}</p>
+                    <p><span className="text-muted-foreground">Город:</span> {selectedOrder.city}</p>
                   </div>
                 </div>
                 <div>
                   <h3 className="font-semibold mb-2">Детали заказа</h3>
                   <div className="space-y-1 text-sm">
                     <p><span className="text-muted-foreground">Дата:</span> {new Date(selectedOrder.createdAt).toLocaleString('ru-RU')}</p>
-                    <p><span className="text-muted-foreground">Статус:</span> {statusLabels[selectedOrder.status]}</p>
                     <p><span className="text-muted-foreground">Адрес:</span> {selectedOrder.address}</p>
                   </div>
                 </div>
@@ -157,8 +160,8 @@ export default function OrdersManager() {
                   {selectedOrder.items.map((item, index) => (
                     <div key={index} className="flex justify-between items-center p-3 border rounded">
                       <div>
-                        <p className="font-medium">{item.productName}</p>
-                        <p className="text-sm text-muted-foreground">Количество: {item.quantity}</p>
+                        <p className="font-medium">{item.name}</p>
+                        <p className="text-sm text-muted-foreground">Количество: {item.quantity} шт.</p>
                       </div>
                       <p className="font-semibold">{(item.price * item.quantity).toLocaleString('ru-RU')} ₽</p>
                     </div>
