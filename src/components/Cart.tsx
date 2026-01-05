@@ -79,20 +79,20 @@ export default function Cart({ isOpen, onClose, items, onUpdateQuantity, onRemov
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-lg">
+      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="text-2xl">Корзина</SheetTitle>
         </SheetHeader>
 
-        <div className="flex flex-col h-full mt-6">
+        <div className="flex flex-col mt-6 pb-6">
           {items.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center">
+            <div className="flex flex-col items-center justify-center text-center py-16">
               <Icon name="ShoppingCart" className="h-16 w-16 text-muted-foreground mb-4" />
               <p className="text-lg text-muted-foreground">Корзина пуста</p>
             </div>
           ) : (
             <>
-              <div className="flex-1 overflow-y-auto space-y-4">
+              <div className="space-y-4 mb-4">
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-4 p-4 border rounded-lg">
                     <img
