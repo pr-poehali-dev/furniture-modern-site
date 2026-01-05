@@ -19,7 +19,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
   };
 
   const handleCheckboxChange = (
-    category: keyof Pick<FiltersType, 'materials' | 'styles' | 'colors'>,
+    category: keyof Pick<FiltersType, 'categories' | 'materials' | 'styles' | 'colors'>,
     value: string,
     checked: boolean
   ) => {
@@ -52,6 +52,29 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
             onValueChange={handlePriceChange}
             className="mt-2"
           />
+        </div>
+
+        <div>
+          <Label className="text-base mb-3 block">Категория</Label>
+          <div className="space-y-2">
+            {['Кухни прямые', 'Кухни угловые', 'Модульные кухни', 'Аксессуары'].map((category) => (
+              <div key={category} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`category-${category}`}
+                  checked={filters.categories.includes(category)}
+                  onCheckedChange={(checked) =>
+                    handleCheckboxChange('categories', category, checked as boolean)
+                  }
+                />
+                <Label
+                  htmlFor={`category-${category}`}
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  {category}
+                </Label>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div>

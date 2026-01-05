@@ -22,6 +22,7 @@ export interface CartItem extends Product {
 
 export interface Filters {
   priceRange: [number, number];
+  categories: string[];
   materials: string[];
   styles: string[];
   colors: string[];
