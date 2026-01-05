@@ -43,6 +43,16 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
 
           <div className="flex items-center gap-4">
             <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.location.href = '/admin'}
+              className="hidden md:flex"
+            >
+              <Icon name="Settings" className="h-4 w-4 mr-2" />
+              Админ
+            </Button>
+
+            <Button
               variant="ghost"
               size="icon"
               className="relative"
@@ -74,6 +84,13 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
                       {item.name}
                     </a>
                   ))}
+                  <a
+                    href="/admin"
+                    className="text-lg font-medium text-foreground hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Админ-панель
+                  </a>
                 </div>
               </SheetContent>
             </Sheet>
