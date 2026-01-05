@@ -6,7 +6,7 @@ export default function Hero() {
       <div
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: 'url(https://cdn.poehali.dev/projects/3790fdb2-666f-4121-a356-41465cdfc362/files/ff25111a-480b-4143-83e4-7b4b74da9603.jpg)',
+          backgroundImage: 'url(https://cdn.poehali.dev/projects/3790fdb2-666f-4121-a356-41465cdfc362/files/b43e190a-10e7-4457-a105-9e1ef8684a93.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
