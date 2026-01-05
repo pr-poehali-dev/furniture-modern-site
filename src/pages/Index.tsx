@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
-import Categories from '@/components/Categories';
 import Catalog from '@/components/Catalog';
 import About from '@/components/About';
 import Delivery from '@/components/Delivery';
@@ -68,7 +67,6 @@ export default function Index() {
       
       <main className="flex-1">
         <Hero />
-        <Categories />
         <Catalog onAddToCart={handleAddToCart} />
         <About />
         <Delivery />
