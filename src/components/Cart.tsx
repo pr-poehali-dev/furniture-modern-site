@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 import Icon from '@/components/ui/icon';
 import { CartItem } from '@/types/product';
 
@@ -14,6 +18,64 @@ interface CartProps {
 
 export default function Cart({ isOpen, onClose, items, onUpdateQuantity, onRemoveItem }: CartProps) {
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    lastName: '',
+    firstName: '',
+    middleName: '',
+    phone: '',
+    city: '',
+    address: '',
+  });
+
+  const handleSubmit = async () => {
+    if (!formData.lastName || !formData.firstName || !formData.phone || !formData.city || !formData.address) {
+      toast({
+        title: 'Ошибка',
+        description: 'Заполните все обязательные поля',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('https://functions.poehali.dev/f2f3ed06-47b3-4ab8-8e9e-f5c502b1b06b', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer: formData,
+          items: items.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+          })),
+          total,
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: 'Заказ оформлен',
+          description: 'Мы свяжемся с вами в ближайшее время',
+        });
+        setFormData({ lastName: '', firstName: '', middleName: '', phone: '', city: '', address: '' });
+        onClose();
+      } else {
+        throw new Error('Failed to submit order');
+      }
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось оформить заказ. Попробуйте позже',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -34,7 +96,7 @@ export default function Cart({ isOpen, onClose, items, onUpdateQuantity, onRemov
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-4 p-4 border rounded-lg">
                     <img
-                      src={item.image}
+                      src={item.images[0]}
                       alt={item.name}
                       className="w-20 h-20 object-cover rounded"
                     />
@@ -79,8 +141,82 @@ export default function Cart({ isOpen, onClose, items, onUpdateQuantity, onRemov
                   <span>Итого:</span>
                   <span>{total.toLocaleString('ru-RU')} ₽</span>
                 </div>
-                <Button className="w-full" size="lg">
-                  Оформить заказ
+                
+                <Separator />
+                
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-lg">Контактные данные</h3>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="lastName">Фамилия *</Label>
+                      <Input
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                        placeholder="Иванов"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="firstName">Имя *</Label>
+                      <Input
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        placeholder="Иван"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="middleName">Отчество</Label>
+                    <Input
+                      id="middleName"
+                      value={formData.middleName}
+                      onChange={(e) => setFormData({ ...formData, middleName: e.target.value })}
+                      placeholder="Иванович"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="phone">Телефон *</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="+7 (999) 123-45-67"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="city">Город *</Label>
+                    <Input
+                      id="city"
+                      value={formData.city}
+                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                      placeholder="Москва"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="address">Адрес доставки *</Label>
+                    <Input
+                      id="address"
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      placeholder="ул. Пушкина, д. 10, кв. 5"
+                    />
+                  </div>
+                </div>
+                
+                <Button 
+                  className="w-full" 
+                  size="lg"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Отправка...' : 'Оформить заказ'}
                 </Button>
               </div>
             </>

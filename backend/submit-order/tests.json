@@ -1,0 +1,50 @@
+{
+  "tests": [
+    {
+      "name": "Submit valid order",
+      "method": "POST",
+      "body": {
+        "customer": {
+          "lastName": "Иванов",
+          "firstName": "Иван",
+          "middleName": "Иванович",
+          "phone": "+7 (999) 123-45-67",
+          "city": "Москва",
+          "address": "ул. Пушкина, д. 10"
+        },
+        "items": [
+          {
+            "id": 1,
+            "name": "Кухня Модерн",
+            "price": 45000,
+            "quantity": 1
+          }
+        ],
+        "total": 45000
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "orderId": "number",
+        "createdAt": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Reject order with missing fields",
+      "method": "POST",
+      "body": {
+        "customer": {
+          "lastName": "Петров"
+        },
+        "items": [],
+        "total": 0
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
