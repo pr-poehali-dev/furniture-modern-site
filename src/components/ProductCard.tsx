@@ -39,6 +39,15 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             {product.color}
           </Badge>
         </div>
+        <div className="mb-3 p-3 bg-muted/30 rounded-lg">
+          <div className="flex items-center gap-2 mb-1">
+            <Icon name="Ruler" className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs font-medium text-muted-foreground">Габариты (Д×Ш×В):</span>
+          </div>
+          <div className="text-sm font-medium">
+            {product.dimensions.length} × {product.dimensions.width} × {product.dimensions.height} см
+          </div>
+        </div>
         <div className="text-2xl font-bold text-primary">
           {product.price.toLocaleString('ru-RU')} ₽
         </div>

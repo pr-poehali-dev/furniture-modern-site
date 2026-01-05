@@ -8,6 +8,11 @@ export interface Product {
   style: string;
   color: string;
   description: string;
+  dimensions: {
+    length: number;
+    width: number;
+    height: number;
+  };
 }
 
 export interface CartItem extends Product {

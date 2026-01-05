@@ -11,6 +11,7 @@ export const products: Product[] = [
     style: 'Скандинавский',
     color: 'Бежевый',
     description: 'Удобный трехместный диван в скандинавском стиле',
+    dimensions: { length: 220, width: 90, height: 85 },
   },
   {
     id: 2,
@@ -22,6 +23,7 @@ export const products: Product[] = [
     style: 'Лофт',
     color: 'Коричневый',
     description: 'Массивный обеденный стол из натурального дерева',
+    dimensions: { length: 180, width: 90, height: 75 },
   },
   {
     id: 3,
@@ -33,6 +35,7 @@ export const products: Product[] = [
     style: 'Минимализм',
     color: 'Светлый',
     description: 'Комфортная кровать с изголовьем из натурального дерева',
+    dimensions: { length: 210, width: 160, height: 100 },
   },
   {
     id: 4,
@@ -44,6 +47,7 @@ export const products: Product[] = [
     style: 'Классический',
     color: 'Коричневый',
     description: 'Элегантное кресло с кожаной обивкой',
+    dimensions: { length: 80, width: 85, height: 95 },
   },
   {
     id: 5,
@@ -55,6 +59,7 @@ export const products: Product[] = [
     style: 'Прованс',
     color: 'Белый',
     description: 'Изящный письменный стол с ящиками',
+    dimensions: { length: 120, width: 60, height: 75 },
   },
   {
     id: 6,
@@ -66,6 +71,7 @@ export const products: Product[] = [
     style: 'Модерн',
     color: 'Серый',
     description: 'Вместительный шкаф-купе с зеркальными дверцами',
+    dimensions: { length: 240, width: 60, height: 220 },
   },
   {
     id: 7,
@@ -77,6 +83,7 @@ export const products: Product[] = [
     style: 'Лофт',
     color: 'Темный',
     description: 'Стильный комод с металлической фурнитурой',
+    dimensions: { length: 120, width: 45, height: 90 },
   },
   {
     id: 8,
@@ -88,6 +95,7 @@ export const products: Product[] = [
     style: 'Индастриал',
     color: 'Черный',
     description: 'Открытый стеллаж в индустриальном стиле',
+    dimensions: { length: 180, width: 40, height: 200 },
   },
 ];
 

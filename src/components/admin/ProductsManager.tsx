@@ -45,6 +45,7 @@ export default function ProductsManager() {
     color: colors[0],
     description: '',
     image: 'https://cdn.poehali.dev/projects/3790fdb2-666f-4121-a356-41465cdfc362/files/ff25111a-480b-4143-83e4-7b4b74da9603.jpg',
+    dimensions: { length: 0, width: 0, height: 0 },
   });
 
   const handleOpenDialog = (product?: Product) => {
@@ -62,6 +63,7 @@ export default function ProductsManager() {
         color: colors[0],
         description: '',
         image: 'https://cdn.poehali.dev/projects/3790fdb2-666f-4121-a356-41465cdfc362/files/ff25111a-480b-4143-83e4-7b4b74da9603.jpg',
+        dimensions: { length: 0, width: 0, height: 0 },
       });
     }
     setIsDialogOpen(true);
@@ -193,6 +195,53 @@ export default function ProductsManager() {
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
                 />
+              </div>
+              <div>
+                <Label className="mb-3 block">Габариты (см)</Label>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Длина</Label>
+                    <Input
+                      type="number"
+                      value={formData.dimensions?.length || 0}
+                      onChange={(e) => setFormData({ 
+                        ...formData, 
+                        dimensions: { 
+                          ...formData.dimensions!, 
+                          length: Number(e.target.value) 
+                        } 
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Ширина</Label>
+                    <Input
+                      type="number"
+                      value={formData.dimensions?.width || 0}
+                      onChange={(e) => setFormData({ 
+                        ...formData, 
+                        dimensions: { 
+                          ...formData.dimensions!, 
+                          width: Number(e.target.value) 
+                        } 
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Высота</Label>
+                    <Input
+                      type="number"
+                      value={formData.dimensions?.height || 0}
+                      onChange={(e) => setFormData({ 
+                        ...formData, 
+                        dimensions: { 
+                          ...formData.dimensions!, 
+                          height: Number(e.target.value) 
+                        } 
+                      })}
+                    />
+                  </div>
+                </div>
               </div>
               <Button onClick={handleSave} className="w-full">
                 {editingProduct ? 'Сохранить изменения' : 'Добавить товар'}
