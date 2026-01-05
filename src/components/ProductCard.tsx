@@ -29,9 +29,6 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
         />
-        <Badge className="absolute top-4 right-4 bg-background/90 text-foreground">
-          {product.category}
-        </Badge>
         
         {product.images.length > 1 && (
           <>
