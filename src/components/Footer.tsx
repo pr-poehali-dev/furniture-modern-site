@@ -31,15 +31,15 @@ export default function Footer() {
             <ul className="space-y-2 text-primary-foreground/80">
               <li className="flex items-center gap-2">
                 <Icon name="Phone" className="h-4 w-4" />
-                +7 (495) 123-45-67
+                +7 (343) 272-80-72
               </li>
               <li className="flex items-center gap-2">
                 <Icon name="Mail" className="h-4 w-4" />
-                info@kitchen-shop.ru
+                shika_room@bk.ru
               </li>
               <li className="flex items-center gap-2">
                 <Icon name="MapPin" className="h-4 w-4" />
-                г. Москва, ул. Примерная, д. 15
+                Екатеринбург ул. Лукиных 1Ак1с
               </li>
             </ul>
           </div>

@@ -8,17 +8,17 @@ const contactInfo = [
   {
     icon: 'MapPin',
     title: 'Адрес',
-    value: 'г. Москва, ул. Примерная, д. 15',
+    value: 'Екатеринбург ул. Лукиных 1Ак1с',
   },
   {
     icon: 'Phone',
     title: 'Телефон',
-    value: '+7 (495) 123-45-67',
+    value: '+7 (343) 272-80-72',
   },
   {
     icon: 'Mail',
     title: 'Email',
-    value: 'info@mebel-shop.ru',
+    value: 'shika_room@bk.ru',
   },
   {
     icon: 'Clock',
