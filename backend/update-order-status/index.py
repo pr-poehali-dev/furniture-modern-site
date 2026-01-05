@@ -3,7 +3,7 @@ import os
 import psycopg2
 
 def handler(event: dict, context) -> dict:
-    '''API для обновления статуса заказа'''
+    '''API для обновления статуса заказа и примечаний'''
     method = event.get('httpMethod', 'PUT')
     
     if method == 'OPTIONS':
@@ -34,29 +34,53 @@ def handler(event: dict, context) -> dict:
     
     order_id = data.get('orderId')
     new_status = data.get('status')
+    notes = data.get('notes')
     
-    if not order_id or not new_status:
+    if not order_id:
         return {
             'statusCode': 400,
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({'error': 'Missing orderId or status'}),
+            'body': json.dumps({'error': 'Missing orderId'}),
             'isBase64Encoded': False
         }
     
-    allowed_statuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled']
-    if new_status not in allowed_statuses:
+    updates = []
+    params = []
+    
+    if new_status is not None:
+        allowed_statuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled']
+        if new_status not in allowed_statuses:
+            return {
+                'statusCode': 400,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({'error': f'Invalid status. Allowed: {", ".join(allowed_statuses)}'}),
+                'isBase64Encoded': False
+            }
+        updates.append('status = %s')
+        params.append(new_status)
+    
+    if notes is not None:
+        updates.append('notes = %s')
+        params.append(notes)
+    
+    if not updates:
         return {
             'statusCode': 400,
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({'error': f'Invalid status. Allowed: {", ".join(allowed_statuses)}'}),
+            'body': json.dumps({'error': 'No fields to update'}),
             'isBase64Encoded': False
         }
+    
+    params.append(order_id)
     
     conn = None
     try:
@@ -64,10 +88,8 @@ def handler(event: dict, context) -> dict:
         conn = psycopg2.connect(dsn)
         cur = conn.cursor()
         
-        cur.execute(
-            'UPDATE orders SET status = %s WHERE id = %s RETURNING id',
-            (new_status, order_id)
-        )
+        sql = f"UPDATE orders SET {', '.join(updates)} WHERE id = %s RETURNING id"
+        cur.execute(sql, params)
         
         result = cur.fetchone()
         if not result:
@@ -83,17 +105,19 @@ def handler(event: dict, context) -> dict:
         
         conn.commit()
         
+        response_data = {'success': True, 'orderId': order_id}
+        if new_status is not None:
+            response_data['status'] = new_status
+        if notes is not None:
+            response_data['notes'] = notes
+        
         return {
             'statusCode': 200,
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({
-                'success': True,
-                'orderId': order_id,
-                'status': new_status
-            }),
+            'body': json.dumps(response_data),
             'isBase64Encoded': False
         }
         

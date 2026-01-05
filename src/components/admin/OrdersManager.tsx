@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -23,6 +23,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 
 const API_URL = 'https://functions.poehali.dev/eadf3b13-4a58-4dfe-8483-18438ce40377';
@@ -66,6 +67,7 @@ interface Order {
   items: OrderItem[];
   total: number;
   status: OrderStatus;
+  notes: string;
   createdAt: string;
 }
 
@@ -74,6 +76,9 @@ export default function OrdersManager() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editedNotes, setEditedNotes] = useState('');
+  const [isSavingNotes, setIsSavingNotes] = useState(false);
+  const notesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -99,6 +104,7 @@ export default function OrdersManager() {
 
   const handleViewOrder = (order: Order) => {
     setSelectedOrder(order);
+    setEditedNotes(order.notes || '');
     setIsDialogOpen(true);
   };
 
@@ -125,6 +131,52 @@ export default function OrdersManager() {
         description: 'Не удалось обновить статус',
         variant: 'destructive',
       });
+    }
+  };
+
+  const handleNotesChange = (value: string) => {
+    setEditedNotes(value);
+    
+    if (notesTimeoutRef.current) {
+      clearTimeout(notesTimeoutRef.current);
+    }
+    
+    notesTimeoutRef.current = setTimeout(() => {
+      saveNotes(value);
+    }, 1000);
+  };
+
+  const saveNotes = async (notes: string) => {
+    if (!selectedOrder) return;
+    
+    setIsSavingNotes(true);
+    try {
+      const response = await fetch(UPDATE_STATUS_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: selectedOrder.id, notes }),
+      });
+
+      if (response.ok) {
+        setOrders(orders.map((o) => 
+          o.id === selectedOrder.id ? { ...o, notes } : o
+        ));
+        setSelectedOrder({ ...selectedOrder, notes });
+        toast({ 
+          title: 'Примечание сохранено',
+          description: 'Изменения успешно сохранены'
+        });
+      } else {
+        throw new Error('Failed to save notes');
+      }
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось сохранить примечание',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSavingNotes(false);
     }
   };
 
@@ -245,6 +297,19 @@ export default function OrdersManager() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="font-semibold">Примечание</h3>
+                  {isSavingNotes && <span className="text-xs text-muted-foreground">Сохранение...</span>}
+                </div>
+                <Textarea
+                  value={editedNotes}
+                  onChange={(e) => handleNotesChange(e.target.value)}
+                  placeholder="Добавьте заметки к заказу..."
+                  className="min-h-[100px] resize-none"
+                />
               </div>
 
               <div className="flex justify-between items-center pt-4 border-t">
