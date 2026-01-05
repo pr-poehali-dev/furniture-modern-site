@@ -42,7 +42,7 @@ export default function ProductsManager() {
   const [formData, setFormData] = useState<Partial<Product>>({
     name: '',
     price: 0,
-    category: 'Прямые кухни',
+    category: 'Кухни прямые',
     material: materials[0],
     style: styles[0],
     color: colors[0],
@@ -81,7 +81,7 @@ export default function ProductsManager() {
       setFormData({
         name: '',
         price: 0,
-        category: 'Прямые кухни',
+        category: 'Кухни прямые',
         material: materials[0],
         style: styles[0],
         color: colors[0],
@@ -187,7 +187,7 @@ export default function ProductsManager() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {['Прямые кухни', 'Угловые кухни', 'Модульные кухни', 'Аксессуары'].map((cat) => (
+                      {['Кухни прямые', 'Кухни угловые', 'Модульные кухни', 'Аксессуары'].map((cat) => (
                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                       ))}
                     </SelectContent>
