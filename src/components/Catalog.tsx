@@ -1,20 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProductCard from './ProductCard';
 import Filters from './Filters';
 import { Product, Filters as FiltersType } from '@/types/product';
-import { products } from '@/data/products';
+
+const API_URL = 'https://functions.poehali.dev/02e5b34b-f4fa-4f7e-b01f-a36dd4e2c6af';
 
 interface CatalogProps {
   onAddToCart: (product: Product) => void;
 }
 
 export default function Catalog({ onAddToCart }: CatalogProps) {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<FiltersType>({
-    priceRange: [0, 100000],
+    priceRange: [0, 200000],
     materials: [],
     styles: [],
     colors: [],
   });
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error('Ошибка загрузки товаров:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProducts();
+  }, []);
 
   const filteredProducts = products.filter((product) => {
     const priceMatch = product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1];
@@ -36,7 +54,11 @@ export default function Catalog({ onAddToCart }: CatalogProps) {
           </div>
           
           <div className="lg:col-span-3">
-            {filteredProducts.length > 0 ? (
+            {loading ? (
+              <div className="text-center py-16">
+                <p className="text-xl text-muted-foreground">Загрузка товаров...</p>
+              </div>
+            ) : filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredProducts.map((product) => (
                   <ProductCard

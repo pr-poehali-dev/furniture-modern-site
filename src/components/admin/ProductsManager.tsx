@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,11 +27,14 @@ import {
 } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 import { Product } from '@/types/product';
-import { products as initialProducts, materials, styles, colors } from '@/data/products';
+import { materials, styles, colors } from '@/data/products';
 import { useToast } from '@/hooks/use-toast';
 
+const API_URL = 'https://functions.poehali.dev/02e5b34b-f4fa-4f7e-b01f-a36dd4e2c6af';
+
 export default function ProductsManager() {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const { toast } = useToast();
@@ -48,6 +51,26 @@ export default function ProductsManager() {
     images: ['https://cdn.poehali.dev/projects/3790fdb2-666f-4121-a356-41465cdfc362/files/ff25111a-480b-4143-83e4-7b4b74da9603.jpg'],
     dimensions: { length: 0, width: 0, height: 0 },
   });
+
+  const loadProducts = async () => {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      toast({ 
+        title: 'Ошибка', 
+        description: 'Не удалось загрузить товары', 
+        variant: 'destructive' 
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
   const handleOpenDialog = (product?: Product) => {
     if (product) {
@@ -71,22 +94,53 @@ export default function ProductsManager() {
     setIsDialogOpen(true);
   };
 
-  const handleSave = () => {
-    if (editingProduct) {
-      setProducts(products.map((p) => (p.id === editingProduct.id ? { ...formData, id: p.id } as Product : p)));
-      toast({ title: 'Успешно', description: 'Товар обновлён' });
-    } else {
-      const newProduct = { ...formData, id: Math.max(...products.map((p) => p.id)) + 1 } as Product;
-      setProducts([...products, newProduct]);
-      toast({ title: 'Успешно', description: 'Товар добавлен' });
+  const handleSave = async () => {
+    try {
+      if (editingProduct) {
+        // Обновление
+        await fetch(API_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...formData, id: editingProduct.id }),
+        });
+        toast({ title: 'Успешно', description: 'Товар обновлён' });
+      } else {
+        // Создание
+        await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+        toast({ title: 'Успешно', description: 'Товар добавлен' });
+      }
+      setIsDialogOpen(false);
+      loadProducts();
+    } catch (error) {
+      toast({ 
+        title: 'Ошибка', 
+        description: 'Не удалось сохранить товар', 
+        variant: 'destructive' 
+      });
     }
-    setIsDialogOpen(false);
   };
 
-  const handleDelete = (id: number) => {
-    setProducts(products.filter((p) => p.id !== id));
-    toast({ title: 'Удалено', description: 'Товар удалён', variant: 'destructive' });
+  const handleDelete = async (id: number) => {
+    try {
+      await fetch(`${API_URL}?id=${id}`, { method: 'DELETE' });
+      toast({ title: 'Удалено', description: 'Товар удалён', variant: 'destructive' });
+      loadProducts();
+    } catch (error) {
+      toast({ 
+        title: 'Ошибка', 
+        description: 'Не удалось удалить товар', 
+        variant: 'destructive' 
+      });
+    }
   };
+
+  if (loading) {
+    return <div className="text-center py-16">Загрузка...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -304,31 +358,33 @@ export default function ProductsManager() {
           <TableHeader>
             <TableRow>
               <TableHead>ID</TableHead>
-              <TableHead>Фото</TableHead>
               <TableHead>Название</TableHead>
               <TableHead>Категория</TableHead>
               <TableHead>Цена</TableHead>
-              <TableHead>Материал</TableHead>
-              <TableHead className="text-right">Действия</TableHead>
+              <TableHead>Действия</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {products.map((product) => (
               <TableRow key={product.id}>
                 <TableCell>{product.id}</TableCell>
-                <TableCell>
-                  <img src={product.image} alt={product.name} className="h-12 w-12 object-cover rounded" />
-                </TableCell>
-                <TableCell className="font-medium">{product.name}</TableCell>
+                <TableCell>{product.name}</TableCell>
                 <TableCell>{product.category}</TableCell>
                 <TableCell>{product.price.toLocaleString('ru-RU')} ₽</TableCell>
-                <TableCell>{product.material}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button size="sm" variant="outline" onClick={() => handleOpenDialog(product)}>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleOpenDialog(product)}
+                    >
                       <Icon name="Pencil" className="h-4 w-4" />
                     </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleDelete(product.id)}>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDelete(product.id)}
+                    >
                       <Icon name="Trash2" className="h-4 w-4" />
                     </Button>
                   </div>
