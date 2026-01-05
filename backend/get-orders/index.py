@@ -48,6 +48,7 @@ def handler(event: dict, context) -> dict:
                 address,
                 items,
                 total,
+                status,
                 created_at
             FROM orders
             ORDER BY created_at DESC
@@ -68,6 +69,7 @@ def handler(event: dict, context) -> dict:
                 'address': order['address'],
                 'items': order['items'],
                 'total': float(order['total']),
+                'status': order['status'],
                 'createdAt': order['created_at'].isoformat()
             })
         

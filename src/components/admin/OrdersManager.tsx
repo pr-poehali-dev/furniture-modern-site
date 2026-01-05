@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -18,6 +26,27 @@ import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
 
 const API_URL = 'https://functions.poehali.dev/eadf3b13-4a58-4dfe-8483-18438ce40377';
+const UPDATE_STATUS_URL = 'https://functions.poehali.dev/b1d96e8c-2de9-4ac3-8e5f-7bcd6ca114ed';
+
+const statusColors = {
+  pending: 'bg-yellow-100 text-yellow-800',
+  confirmed: 'bg-blue-100 text-blue-800',
+  processing: 'bg-purple-100 text-purple-800',
+  shipped: 'bg-indigo-100 text-indigo-800',
+  delivered: 'bg-green-100 text-green-800',
+  cancelled: 'bg-red-100 text-red-800',
+};
+
+const statusLabels = {
+  pending: 'Новый',
+  confirmed: 'Подтверждён',
+  processing: 'В обработке',
+  shipped: 'Отправлен',
+  delivered: 'Доставлен',
+  cancelled: 'Отменён',
+};
+
+type OrderStatus = keyof typeof statusLabels;
 
 interface OrderItem {
   id: number;
@@ -36,6 +65,7 @@ interface Order {
   address: string;
   items: OrderItem[];
   total: number;
+  status: OrderStatus;
   createdAt: string;
 }
 
@@ -72,6 +102,32 @@ export default function OrdersManager() {
     setIsDialogOpen(true);
   };
 
+  const handleStatusChange = async (orderId: number, newStatus: OrderStatus) => {
+    try {
+      const response = await fetch(UPDATE_STATUS_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, status: newStatus }),
+      });
+
+      if (response.ok) {
+        setOrders(orders.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o)));
+        toast({ 
+          title: 'Статус обновлён', 
+          description: `Заказ #${orderId} - ${statusLabels[newStatus]}` 
+        });
+      } else {
+        throw new Error('Failed to update status');
+      }
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось обновить статус',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -99,6 +155,7 @@ export default function OrdersManager() {
               <TableHead>Город</TableHead>
               <TableHead>Дата</TableHead>
               <TableHead>Сумма</TableHead>
+              <TableHead>Статус</TableHead>
               <TableHead className="text-right">Действия</TableHead>
             </TableRow>
           </TableHeader>
@@ -116,6 +173,27 @@ export default function OrdersManager() {
                 <TableCell>{order.city}</TableCell>
                 <TableCell>{new Date(order.createdAt).toLocaleDateString('ru-RU')}</TableCell>
                 <TableCell className="font-semibold">{order.total.toLocaleString('ru-RU')} ₽</TableCell>
+                <TableCell>
+                  <Select
+                    value={order.status}
+                    onValueChange={(value) => handleStatusChange(order.id, value as OrderStatus)}
+                  >
+                    <SelectTrigger className="w-[150px]">
+                      <SelectValue>
+                        <Badge className={statusColors[order.status]}>
+                          {statusLabels[order.status]}
+                        </Badge>
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(statusLabels).map(([key, label]) => (
+                        <SelectItem key={key} value={key}>
+                          {label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </TableCell>
                 <TableCell className="text-right">
                   <Button size="sm" variant="outline" onClick={() => handleViewOrder(order)}>
                     <Icon name="Eye" className="h-4 w-4 mr-2" />

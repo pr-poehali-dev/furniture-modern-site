@@ -1,0 +1,32 @@
+{
+  "tests": [
+    {
+      "name": "Update order status to confirmed",
+      "method": "PUT",
+      "body": {
+        "orderId": 1,
+        "status": "confirmed"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "orderId": "number",
+        "status": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Reject invalid status",
+      "method": "PUT",
+      "body": {
+        "orderId": 1,
+        "status": "invalid_status"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

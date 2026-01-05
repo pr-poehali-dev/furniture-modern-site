@@ -1,4 +1,5 @@
 {
+  "update-order-status": "https://functions.poehali.dev/b1d96e8c-2de9-4ac3-8e5f-7bcd6ca114ed",
   "get-customers": "https://functions.poehali.dev/57f804f2-8be4-4503-879a-db04a47a23ee",
   "get-orders": "https://functions.poehali.dev/eadf3b13-4a58-4dfe-8483-18438ce40377",
   "submit-order": "https://functions.poehali.dev/f2f3ed06-47b3-4ab8-8e9e-f5c502b1b06b",
