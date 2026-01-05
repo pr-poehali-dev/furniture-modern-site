@@ -2,6 +2,50 @@ import json
 import os
 import psycopg2
 from psycopg2.extras import Json
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+def send_order_email(order_id: int, customer: dict, items: list, total: float):
+    '''Отправка уведомления о новом заказе на email'''
+    smtp_host = os.environ.get('SMTP_HOST')
+    smtp_port = int(os.environ.get('SMTP_PORT', '587'))
+    smtp_user = os.environ.get('SMTP_USER')
+    smtp_password = os.environ.get('SMTP_PASSWORD')
+    
+    recipient = 'shika_room@bk.ru'
+    
+    msg = MIMEMultipart()
+    msg['From'] = smtp_user
+    msg['To'] = recipient
+    msg['Subject'] = f'Новый заказ #{order_id}'
+    
+    items_text = '\n'.join([
+        f"  - {item['name']} x {item['quantity']} шт. = {item['price'] * item['quantity']} ₽"
+        for item in items
+    ])
+    
+    body = f"""
+Новый заказ #{order_id}
+
+Клиент:
+  ФИО: {customer['lastName']} {customer['firstName']} {customer.get('middleName', '')}
+  Телефон: {customer['phone']}
+  Город: {customer['city']}
+  Адрес: {customer['address']}
+
+Товары:
+{items_text}
+
+Итого: {total} ₽
+"""
+    
+    msg.attach(MIMEText(body, 'plain', 'utf-8'))
+    
+    with smtplib.SMTP(smtp_host, smtp_port) as server:
+        server.starttls()
+        server.login(smtp_user, smtp_password)
+        server.send_message(msg)
 
 def handler(event: dict, context) -> dict:
     '''API для отправки заказа в CRM и сохранения в базе данных'''
@@ -103,6 +147,11 @@ def handler(event: dict, context) -> dict:
         
         order_id, created_at = cur.fetchone()
         conn.commit()
+        
+        try:
+            send_order_email(order_id, customer, items, total)
+        except Exception as email_error:
+            pass
         
         return {
             'statusCode': 200,
