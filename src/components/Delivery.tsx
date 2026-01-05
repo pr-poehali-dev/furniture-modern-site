@@ -59,7 +59,7 @@ export default function Delivery() {
             <div className="space-y-4 text-muted-foreground">
               <div className="flex gap-3">
                 <Icon name="Check" className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
-                <p>Бесплатная доставка при заказе от 30 000 ₽</p>
+                <p>Бесплатная доставка по Екатеринбургу при заказе от 100 000 ₽</p>
               </div>
               <div className="flex gap-3">
                 <Icon name="Check" className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
@@ -71,11 +71,11 @@ export default function Delivery() {
               </div>
               <div className="flex gap-3">
                 <Icon name="Check" className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
-                <p>Бесплатная профессиональная сборка всей мебели</p>
+                <p>Профессиональная сборка и монтаж</p>
               </div>
               <div className="flex gap-3">
                 <Icon name="Check" className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
-                <p>Подъём на этаж и занос в квартиру включены</p>
+                <p>Подъем в квартиру от 1 000 рублей</p>
               </div>
             </div>
           </CardContent>
