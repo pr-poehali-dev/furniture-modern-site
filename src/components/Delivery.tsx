@@ -71,7 +71,7 @@ export default function Delivery() {
               </div>
               <div className="flex gap-3">
                 <Icon name="Check" className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
-                <p>Профессиональная сборка и монтаж</p>
+                <p>Доставляем в ХМАО и ЯНАО</p>
               </div>
               <div className="flex gap-3">
                 <Icon name="Check" className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
