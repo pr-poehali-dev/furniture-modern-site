@@ -17,11 +17,11 @@ export default function Hero() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 z-10">
         <div className="max-w-2xl animate-fade-in">
           <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
-            Создайте уют <br />
-            вашего дома
+            Кухни вашей<br />
+            мечты
           </h1>
           <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-            Современная мебель из натуральных материалов для комфортной жизни
+            Прямые, угловые и модульные кухни от ведущих производителей. Создайте идеальное пространство для вашего дома
           </p>
           <div className="flex flex-wrap gap-4">
             <Button size="lg" className="text-lg px-8 transition-transform hover:scale-105">

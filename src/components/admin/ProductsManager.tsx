@@ -39,12 +39,13 @@ export default function ProductsManager() {
   const [formData, setFormData] = useState<Partial<Product>>({
     name: '',
     price: 0,
-    category: 'Гостиная',
+    category: 'Прямые кухни',
     material: materials[0],
     style: styles[0],
     color: colors[0],
+    manufacturer: '',
     description: '',
-    image: 'https://cdn.poehali.dev/projects/3790fdb2-666f-4121-a356-41465cdfc362/files/ff25111a-480b-4143-83e4-7b4b74da9603.jpg',
+    images: ['https://cdn.poehali.dev/projects/3790fdb2-666f-4121-a356-41465cdfc362/files/ff25111a-480b-4143-83e4-7b4b74da9603.jpg'],
     dimensions: { length: 0, width: 0, height: 0 },
   });
 
@@ -57,12 +58,13 @@ export default function ProductsManager() {
       setFormData({
         name: '',
         price: 0,
-        category: 'Гостиная',
+        category: 'Прямые кухни',
         material: materials[0],
         style: styles[0],
         color: colors[0],
+        manufacturer: '',
         description: '',
-        image: 'https://cdn.poehali.dev/projects/3790fdb2-666f-4121-a356-41465cdfc362/files/ff25111a-480b-4143-83e4-7b4b74da9603.jpg',
+        images: ['https://cdn.poehali.dev/projects/3790fdb2-666f-4121-a356-41465cdfc362/files/ff25111a-480b-4143-83e4-7b4b74da9603.jpg'],
         dimensions: { length: 0, width: 0, height: 0 },
       });
     }
@@ -131,7 +133,7 @@ export default function ProductsManager() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {['Гостиная', 'Спальня', 'Кухня', 'Офис'].map((cat) => (
+                      {['Прямые кухни', 'Угловые кухни', 'Модульные кухни', 'Аксессуары'].map((cat) => (
                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                       ))}
                     </SelectContent>
@@ -189,12 +191,58 @@ export default function ProductsManager() {
                 </div>
               </div>
               <div>
+                <Label>Производитель</Label>
+                <Input
+                  value={formData.manufacturer}
+                  onChange={(e) => setFormData({ ...formData, manufacturer: e.target.value })}
+                />
+              </div>
+              <div>
                 <Label>Описание</Label>
                 <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
                 />
+              </div>
+              <div>
+                <Label className="mb-3 block">Изображения</Label>
+                <div className="space-y-2">
+                  {formData.images?.map((img, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        value={img}
+                        onChange={(e) => {
+                          const newImages = [...(formData.images || [])];
+                          newImages[index] = e.target.value;
+                          setFormData({ ...formData, images: newImages });
+                        }}
+                        placeholder="URL изображения"
+                      />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          const newImages = formData.images?.filter((_, i) => i !== index);
+                          setFormData({ ...formData, images: newImages });
+                        }}
+                      >
+                        <Icon name="Trash2" className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    variant="outline"
+                    onClick={() => setFormData({ 
+                      ...formData, 
+                      images: [...(formData.images || []), ''] 
+                    })}
+                    className="w-full"
+                  >
+                    <Icon name="Plus" className="h-4 w-4 mr-2" />
+                    Добавить изображение
+                  </Button>
+                </div>
               </div>
               <div>
                 <Label className="mb-3 block">Габариты (см)</Label>

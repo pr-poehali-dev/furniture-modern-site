@@ -7,11 +7,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Icon name="Armchair" className="h-8 w-8" />
-              <span className="text-2xl font-bold">МЕБЕЛЬ</span>
+              <Icon name="ChefHat" className="h-8 w-8" />
+              <span className="text-2xl font-bold">КУХНИ</span>
             </div>
             <p className="text-primary-foreground/80">
-              Качественная мебель для вашего дома из натуральных материалов
+              Кухни на заказ от ведущих производителей
             </p>
           </div>
 
@@ -35,7 +35,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Icon name="Mail" className="h-4 w-4" />
-                info@mebel-shop.ru
+                info@kitchen-shop.ru
               </li>
               <li className="flex items-center gap-2">
                 <Icon name="MapPin" className="h-4 w-4" />
@@ -46,7 +46,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-primary-foreground/20 pt-8 text-center text-primary-foreground/60">
-          <p>&copy; 2024 Мебель. Все права защищены.</p>
+          <p>&copy; 2024 Кухни. Все права защищены.</p>
         </div>
       </div>
     </footer>

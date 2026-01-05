@@ -5,22 +5,22 @@ const features = [
   {
     icon: 'Award',
     title: 'Качество',
-    description: 'Используем только натуральные материалы высшего качества',
+    description: 'Работаем с проверенными производителями кухонь',
   },
   {
     icon: 'Truck',
     title: 'Доставка',
-    description: 'Бесплатная доставка и сборка по всей России',
+    description: 'Бесплатная доставка и установка по всей России',
   },
   {
     icon: 'Shield',
     title: 'Гарантия',
-    description: '5 лет гарантии на всю мебель',
+    description: 'До 5 лет гарантии на кухонную мебель',
   },
   {
-    icon: 'Heart',
-    title: 'Поддержка',
-    description: 'Консультация и помощь на всех этапах',
+    icon: 'Ruler',
+    title: 'Индивидуальный проект',
+    description: 'Бесплатный замер и дизайн-проект',
   },
 ];
 
@@ -29,11 +29,11 @@ export default function About() {
     <section id="about" className="py-16 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">О компании</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Почему мы</h2>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Мы создаём мебель, которая делает ваш дом уютнее и комфортнее. 
-            Более 15 лет опыта в производстве качественной мебели из натуральных материалов.
-            Каждое изделие создается с любовью и вниманием к деталям.
+            Мы специализируемся на продаже кухонной мебели от ведущих производителей. 
+            Более 10 лет помогаем создавать идеальные кухни для вашего дома.
+            Прямые, угловые и модульные кухни на любой вкус и бюджет.
           </p>
         </div>
 

@@ -25,8 +25,8 @@ export default function Header({ cartItemCount, onCartClick }: HeaderProps) {
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
-            <Icon name="Armchair" className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">МЕБЕЛЬ</span>
+            <Icon name="ChefHat" className="h-8 w-8 text-primary" />
+            <span className="text-2xl font-bold text-primary">КУХНИ</span>
           </div>
 
           <div className="hidden md:flex items-center space-x-8">

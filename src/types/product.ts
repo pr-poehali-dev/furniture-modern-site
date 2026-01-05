@@ -2,12 +2,13 @@ export interface Product {
   id: number;
   name: string;
   price: number;
-  image: string;
+  images: string[];
   category: string;
   material: string;
   style: string;
   color: string;
   description: string;
+  manufacturer: string;
   dimensions: {
     length: number;
     width: number;

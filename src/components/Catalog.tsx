@@ -28,7 +28,7 @@ export default function Catalog({ onAddToCart }: CatalogProps) {
   return (
     <section id="catalog" className="py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl md:text-4xl font-bold mb-12">Каталог мебели</h2>
+        <h2 className="text-3xl md:text-4xl font-bold mb-12">Каталог кухонь</h2>
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-1">
