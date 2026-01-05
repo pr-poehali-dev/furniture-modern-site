@@ -3,7 +3,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Filters as FiltersType } from '@/types/product';
-import { materials, styles, colors } from '@/data/products';
+import { materials, colors } from '@/data/products';
 
 interface FiltersProps {
   filters: FiltersType;
@@ -19,7 +19,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
   };
 
   const handleCheckboxChange = (
-    category: keyof Pick<FiltersType, 'categories' | 'materials' | 'styles' | 'colors'>,
+    category: keyof Pick<FiltersType, 'categories' | 'materials' | 'colors'>,
     value: string,
     checked: boolean
   ) => {
@@ -94,29 +94,6 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
                   className="text-sm font-normal cursor-pointer"
                 >
                   {material}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <Label className="text-base mb-3 block">Стиль</Label>
-          <div className="space-y-2">
-            {styles.map((style) => (
-              <div key={style} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`style-${style}`}
-                  checked={filters.styles.includes(style)}
-                  onCheckedChange={(checked) =>
-                    handleCheckboxChange('styles', style, checked as boolean)
-                  }
-                />
-                <Label
-                  htmlFor={`style-${style}`}
-                  className="text-sm font-normal cursor-pointer"
-                >
-                  {style}
                 </Label>
               </div>
             ))}

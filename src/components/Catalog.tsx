@@ -16,7 +16,6 @@ export default function Catalog({ onAddToCart }: CatalogProps) {
     priceRange: [0, 200000],
     categories: [],
     materials: [],
-    styles: [],
     colors: [],
   });
 
@@ -39,10 +38,9 @@ export default function Catalog({ onAddToCart }: CatalogProps) {
     const priceMatch = product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1];
     const categoryMatch = filters.categories.length === 0 || filters.categories.includes(product.category);
     const materialMatch = filters.materials.length === 0 || filters.materials.includes(product.material);
-    const styleMatch = filters.styles.length === 0 || filters.styles.includes(product.style);
     const colorMatch = filters.colors.length === 0 || filters.colors.includes(product.color);
 
-    return priceMatch && categoryMatch && materialMatch && styleMatch && colorMatch;
+    return priceMatch && categoryMatch && materialMatch && colorMatch;
   });
 
   return (
